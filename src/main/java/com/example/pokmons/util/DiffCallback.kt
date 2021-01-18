@@ -1,4 +1,4 @@
-package com.example.pokmons.data.util
+package com.example.pokmons.util
 
 import androidx.recyclerview.widget.DiffUtil
 import com.example.pokmons.data.entities.Pokemon
@@ -17,6 +17,6 @@ class DiffCallback(val oldList: List<Pokemon>, val newList: List<Pokemon>): Diff
     }
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        return oldList[oldItemPosition] == newList[newItemPosition]
+        return oldList[oldItemPosition].name == newList[newItemPosition].name
     }
 }

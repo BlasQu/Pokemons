@@ -1,10 +1,8 @@
 package com.example.pokmons.data.converters
 
 import androidx.room.TypeConverter
-import androidx.room.TypeConverters
-import com.example.pokmons.data.entities.Result
+import com.example.pokmons.data.serializables.Result
 import com.google.gson.Gson
-import kotlinx.serialization.json.Json
 
 class JSONConverter {
 

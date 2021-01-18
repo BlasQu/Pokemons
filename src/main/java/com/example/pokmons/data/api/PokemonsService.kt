@@ -1,11 +1,22 @@
 package com.example.pokmons.data.api
 
-import com.example.pokmons.data.entities.PokemonsList
+import com.example.pokmons.data.serializables.PokemonImage
+import com.example.pokmons.data.serializables.PokemonsList
 import retrofit2.Response
 import retrofit2.http.GET
+import retrofit2.http.Query
+import retrofit2.http.Url
 
 interface PokemonsService {
 
-    @GET("pokemon?limit=50&offset=0")
-    suspend fun getPokemon(): Response<PokemonsList>
+    @GET("pokemon")
+    suspend fun getPokemon(
+            @Query("limit") limit: Int = 50,
+            @Query("offset") offset: Int = 0
+    ): Response<PokemonsList>
+
+    @GET
+    suspend fun getImageForPokemon(
+        @Url imageUrl: String
+    ): Response<PokemonImage>
 }

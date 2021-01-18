@@ -1,4 +1,4 @@
-package com.example.pokmons.data.entities
+package com.example.pokmons.data.serializables
 
 import kotlinx.serialization.Serializable
 
