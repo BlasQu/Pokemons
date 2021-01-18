@@ -19,4 +19,10 @@ class PokemonsViewModel @ViewModelInject constructor(
             repository.insertPokemons(pokemons)
         }
     }
+
+    fun deleteAllData() {
+        viewModelScope.launch {
+            repository.deleteAllData()
+        }
+    }
 }

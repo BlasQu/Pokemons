@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.pokmons">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
         android:name=".di.HiltApplicationProvider"
         android:allowBackup="true"

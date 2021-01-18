@@ -9,9 +9,10 @@ class PokemonsRepository @Inject constructor(
     val dao: PokemonsDao
 ) {
 
-    suspend fun insertPokemons(pokemons: List<Pokemon>) {
-        dao.insertPokemons(pokemons)
-    }
+    suspend fun insertPokemons(pokemons: List<Pokemon>) = dao.insertPokemons(pokemons)
+
 
     fun readPokemons(): Flow<List<Pokemon>> = dao.readPokemons()
+
+    suspend fun deleteAllData() = dao.deleteAllData()
 }

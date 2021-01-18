@@ -15,4 +15,7 @@ interface PokemonsDao {
 
     @Query("SELECT * FROM pokemons")
     fun readPokemons(): Flow<List<Pokemon>>
+
+    @Query("DELETE FROM pokemons")
+    suspend fun deleteAllData()
 }

@@ -2,20 +2,31 @@ package com.example.pokmons.di
 
 import android.content.Context
 import androidx.room.Room
-import androidx.room.RoomDatabase
+import com.example.pokmons.data.api.PokemonsService
+import com.example.pokmons.data.consts.CONSTS
 import com.example.pokmons.data.room.PokemonsDao
 import com.example.pokmons.data.room.PokemonsDatabase
+import com.google.gson.Gson
+import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.components.ApplicationComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
+import okhttp3.MediaType
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 @Module
 @InstallIn(ApplicationComponent::class)
 class HiltModule {
+
+    @Provides
+    fun providesBaseUrl(): String = CONSTS.BASE_URL
 
     @Singleton
     @Provides
@@ -30,5 +41,27 @@ class HiltModule {
     fun providesDao(
             pokemonsDatabase: PokemonsDatabase): PokemonsDao {
         return pokemonsDatabase.getDao()
+    }
+
+    @ExperimentalSerializationApi
+    @Singleton
+    @Provides
+    fun providesRetrofit(
+        BASE_URL: String
+    ): Retrofit {
+        val content = MediaType.get("application/json")
+        val json = Json { ignoreUnknownKeys = true }.asConverterFactory(content)
+        return Retrofit.Builder()
+            .baseUrl("https://pokeapi.co/api/v2/")
+            .addConverterFactory(json)
+            .build()
+    }
+
+    @Singleton
+    @Provides
+    fun providesPokemonsService(
+        retrofit: Retrofit
+    ): PokemonsService {
+        return retrofit.create(PokemonsService::class.java)
     }
 }
