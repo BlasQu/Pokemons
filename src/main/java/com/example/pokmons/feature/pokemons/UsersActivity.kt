@@ -1,8 +1,17 @@
 package com.example.pokmons.feature.pokemons
 
+import android.app.AppOpsManager
+import android.app.usage.ConfigurationStats
+import android.app.usage.UsageStats
+import android.app.usage.UsageStatsManager
+import android.content.Context
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
@@ -19,6 +28,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -35,13 +46,8 @@ class UsersActivity : AppCompatActivity() {
         binding = ActivityUsersBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        viewmodel.deleteAllData()
         setupCollectors()
         setupFragment()
-
-        lifecycleScope.launch {
-            viewmodel.responseGetPokemonsImage(0)
-        }
     }
 
     private fun setupFragment() {

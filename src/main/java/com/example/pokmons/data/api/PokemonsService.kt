@@ -14,9 +14,4 @@ interface PokemonsService {
             @Query("limit") limit: Int = 50,
             @Query("offset") offset: Int = 0
     ): Response<PokemonsList>
-
-    @GET
-    suspend fun getImageForPokemon(
-        @Url imageUrl: String
-    ): Response<PokemonImage>
 }

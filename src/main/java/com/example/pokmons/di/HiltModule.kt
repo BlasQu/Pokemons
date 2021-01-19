@@ -1,6 +1,9 @@
 package com.example.pokmons.di
 
 import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.createDataStore
 import androidx.room.Room
 import com.example.pokmons.data.api.PokemonsService
 import com.example.pokmons.data.consts.CONSTS
@@ -41,6 +44,14 @@ class HiltModule {
     fun providesDao(
             pokemonsDatabase: PokemonsDatabase): PokemonsDao {
         return pokemonsDatabase.getDao()
+    }
+
+    @Provides
+    @Singleton
+    fun providesDataStore(
+            @ApplicationContext context: Context
+    ): DataStore<Preferences> {
+        return context.createDataStore("timer")
     }
 
     @ExperimentalSerializationApi

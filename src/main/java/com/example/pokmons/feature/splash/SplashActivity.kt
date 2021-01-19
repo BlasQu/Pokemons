@@ -1,8 +1,12 @@
 package com.example.pokmons.feature.splash
 
+import android.app.usage.UsageStats
+import android.app.usage.UsageStatsManager
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
@@ -12,6 +16,8 @@ import com.example.pokmons.databinding.ActivitySplashBinding
 import com.example.pokmons.feature.pokemons.UsersActivity
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
 
 class SplashActivity : AppCompatActivity() {
 
@@ -24,6 +30,7 @@ class SplashActivity : AppCompatActivity() {
 
         animateSplash()
         changeActivity()
+        setupStats()
 
     }
 
@@ -33,6 +40,19 @@ class SplashActivity : AppCompatActivity() {
             delay(3000)
             startActivity(intent)
             finish()
+        }
+    }
+
+    private fun setupStats() {
+        val usageStatsManager: UsageStatsManager = getSystemService(Context.USAGE_STATS_SERVICE)!! as UsageStatsManager
+        val calendar = Calendar.getInstance()
+        calendar.add(Calendar.HOUR, -1)
+        val queryStatsManager: List<UsageStats> = usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, calendar.timeInMillis, System.currentTimeMillis())
+        for (every in queryStatsManager) {
+            if (every.packageName == packageName) {
+                val date = SimpleDateFormat("HH:mm:ss").format(every.lastTimeVisible)
+                Log.d("NOTPOKEMON", date.toString())
+            }
         }
     }
 
