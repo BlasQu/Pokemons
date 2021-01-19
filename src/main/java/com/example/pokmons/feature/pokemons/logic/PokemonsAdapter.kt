@@ -1,15 +1,13 @@
-package com.example.pokmons.feature.pokemons
+package com.example.pokmons.feature.pokemons.logic
 
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pokmons.data.entities.Pokemon
 import com.example.pokmons.util.DiffCallback
 import com.example.pokmons.databinding.RvPokemonItemBinding
-import com.facebook.drawee.backends.pipeline.Fresco
 import javax.inject.Inject
 
 class PokemonsAdapter @Inject constructor(

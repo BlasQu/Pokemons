@@ -12,7 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Pokémons">
-        <activity android:name="com.example.pokmons.feature.pokemons.PokemonsActivity"></activity>
+        <activity android:name="com.example.pokmons.feature.pokemons.UsersActivity"></activity>
         <activity android:name="com.example.pokmons.feature.splash.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

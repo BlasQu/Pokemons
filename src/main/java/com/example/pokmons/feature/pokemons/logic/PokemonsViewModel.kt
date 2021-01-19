@@ -1,14 +1,16 @@
-package com.example.pokmons.feature.pokemons
+package com.example.pokmons.feature.pokemons.logic
 
-import com.example.pokmons.data.serializables.Result
+import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokmons.data.entities.Pokemon
+import com.example.pokmons.data.serializables.Result
 import com.example.pokmons.util.RequestState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class PokemonsViewModel @ViewModelInject constructor(
     val repository: PokemonsRepository
@@ -30,19 +32,21 @@ class PokemonsViewModel @ViewModelInject constructor(
         }
     }
 
-    suspend fun responseGetPokemonsImage(startPoint: Int, endPoint: Int) {
+    suspend fun responseGetPokemonsImage(startPoint: Int) {
         var pokemonsList = listOf<Result>()
         var pokemonsImagesList = listOf<String>()
 
-        val response = viewModelScope.launch {
+        withContext(viewModelScope.coroutineContext) {
             requestState.value = RequestState.LOADING
-            pokemonsList = repository.responseGetPokemons(50, startPoint)
-            pokemonsImagesList = repository.responseGetPokemonsImage(startPoint, endPoint)
-        }.join()
+            launch { pokemonsList = repository.responseGetPokemons(startPoint) }
+            launch { pokemonsImagesList = repository.responseGetPokemonsImage(startPoint) }
+        }
 
+        Log.d("POKEMON", pokemonsList.size.toString())
+        Log.d("POKEMON", pokemonsImagesList.size.toString())
         if (pokemonsList.size == pokemonsImagesList.size) {
             val innerPokemons = mutableListOf<Pokemon>()
-            for (i in 0..49) {
+            for (i in pokemonsList.indices) {
                 val name = pokemonsList[i].name
                 val url = pokemonsList[i].url
                 val imageUrl = pokemonsImagesList[i]
@@ -50,6 +54,8 @@ class PokemonsViewModel @ViewModelInject constructor(
             }
             requestState.value = RequestState.SUCCESS
             insertPokemons(innerPokemons)
+        } else {
+            requestState.value = RequestState.ERROR("Error occurred while requesting data.")
         }
     }
 }

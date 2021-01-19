@@ -1,20 +1,20 @@
 package com.example.pokmons.feature.pokemons
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.res.ResourcesCompat
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.pokmons.R
-import com.example.pokmons.data.api.PokemonsService
-import com.example.pokmons.data.entities.Pokemon
-import com.example.pokmons.databinding.ActivityPokemonsBinding
-import com.example.pokmons.databinding.ProgressBarBinding
+import com.example.pokmons.databinding.ActivityUsersBinding
+import com.example.pokmons.feature.pokemons.fragments.PokemonsFragment
+import com.example.pokmons.feature.pokemons.logic.PokemonsViewModel
+import com.example.pokmons.util.Divider
 import com.example.pokmons.util.RequestState
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
@@ -22,62 +22,41 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class PokemonsActivity : AppCompatActivity() {
+class UsersActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityPokemonsBinding
+    private lateinit var binding: ActivityUsersBinding
     private val viewmodel by viewModels<PokemonsViewModel>()
 
-
     @Inject
-    lateinit var pokemonsAdapter: PokemonsAdapter
+    lateinit var pokemonsFragment: PokemonsFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityPokemonsBinding.inflate(layoutInflater)
+        binding = ActivityUsersBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         viewmodel.deleteAllData()
-        setupAdapter()
         setupCollectors()
+        setupFragment()
 
         lifecycleScope.launch {
-            viewmodel.responseGetPokemonsImage(1, 50)
+            viewmodel.responseGetPokemonsImage(0)
         }
-        /*
-        lifecycleScope.launch {
-            val response = api.getPokemon()
-            if (response.isSuccessful) {
+    }
 
-                val results = response.body()!!.results
-                val pokemonsList = mutableListOf<Pokemon>()
-
-                for (every in results) {
-
-                    val id = Regex("[0-9]+").findAll(every.url).map(MatchResult::value).toList()
-                    val url = "https://pokeapi.co/api/v2/pokemon-form/${id[1]}/"
-
-                    lifecycleScope.launch {
-
-                        val imageResponse = api.getImageForPokemon(url)
-                        if (imageResponse.isSuccessful) {
-                            pokemonsList.add(Pokemon(0, every.name, every.url, imageResponse.body()!!.sprites.front_default))
-                            Log.d("POKEMON", pokemonsList.toString())
-                        }
-                    }
-                }
-            }
+    private fun setupFragment() {
+        supportFragmentManager.beginTransaction().apply {
+            replace(R.id.fragment_container, pokemonsFragment)
+            addToBackStack("PokemonsFragment")
+            commit()
         }
+    }
 
-         */
+    fun snackbarMessage(message: String) {
+        Snackbar.make(binding.root, message, Snackbar.LENGTH_SHORT).show()
     }
 
     private fun setupCollectors() {
-        lifecycleScope.launch {
-            viewmodel.pokemons.collect {
-                pokemonsAdapter.submitData(it)
-            }
-        }
-
         lifecycleScope.launch {
             val shortAnimTime = resources.getInteger(R.integer.short_anim_time).toLong()
             viewmodel.requestState.collect {
@@ -88,10 +67,8 @@ class PokemonsActivity : AppCompatActivity() {
                             interpolator = FastOutSlowInInterpolator()
                             alpha(0f)
                         }
-                        delay(shortAnimTime)
-                        binding.holderProgressBar.holderProgressBar.visibility = View.VISIBLE
+                        delay(3000)
                         viewmodel.requestState.value = RequestState.EMPTY
-
                     }
                     RequestState.LOADING -> {
                         binding.holderProgressBar.holderProgressBar.animate().apply {
@@ -101,15 +78,19 @@ class PokemonsActivity : AppCompatActivity() {
                             alpha(0.75f)
                         }
                     }
+                    is RequestState.ERROR -> {
+                        binding.holderProgressBar.holderProgressBar.animate().apply {
+                            duration = shortAnimTime
+                            interpolator = FastOutSlowInInterpolator()
+                            alpha(0f)
+                        }
+                        delay(shortAnimTime)
+                        viewmodel.requestState.value = RequestState.EMPTY
+                        snackbarMessage(it.message)
+                    }
+                    RequestState.EMPTY -> binding.holderProgressBar.holderProgressBar.visibility = View.GONE
                 }
             }
-        }
-    }
-
-    private fun setupAdapter() {
-        binding.recyclerView.apply {
-            layoutManager = LinearLayoutManager(this@PokemonsActivity)
-            adapter = pokemonsAdapter
         }
     }
 }

@@ -9,7 +9,7 @@ import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.lifecycle.lifecycleScope
 import com.example.pokmons.R
 import com.example.pokmons.databinding.ActivitySplashBinding
-import com.example.pokmons.feature.pokemons.PokemonsActivity
+import com.example.pokmons.feature.pokemons.UsersActivity
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -28,7 +28,7 @@ class SplashActivity : AppCompatActivity() {
     }
 
     private fun changeActivity() {
-        val intent = Intent(this, PokemonsActivity::class.java)
+        val intent = Intent(this, UsersActivity::class.java)
         lifecycleScope.launch {
             delay(3000)
             startActivity(intent)
