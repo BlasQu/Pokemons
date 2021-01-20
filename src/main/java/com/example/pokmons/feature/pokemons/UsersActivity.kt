@@ -1,34 +1,21 @@
 package com.example.pokmons.feature.pokemons
 
-import android.app.AppOpsManager
-import android.app.usage.ConfigurationStats
-import android.app.usage.UsageStats
-import android.app.usage.UsageStatsManager
-import android.content.Context
-import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.res.ResourcesCompat
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.pokmons.R
 import com.example.pokmons.data.serializables.PokemonInfo
 import com.example.pokmons.databinding.ActivityUsersBinding
 import com.example.pokmons.feature.pokemons.fragments.InfoFragment
 import com.example.pokmons.feature.pokemons.fragments.PokemonsFragment
-import com.example.pokmons.feature.pokemons.logic.PokemonsAdapter
 import com.example.pokmons.feature.pokemons.logic.PokemonsViewModel
-import com.example.pokmons.util.Divider
 import com.example.pokmons.util.RequestState
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -37,8 +24,6 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.*
 import javax.inject.Inject
 
 @ExperimentalCoroutinesApi

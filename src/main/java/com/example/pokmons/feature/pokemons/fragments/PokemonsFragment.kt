@@ -1,34 +1,23 @@
 package com.example.pokmons.feature.pokemons.fragments
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
-import android.widget.Toast
-import androidx.core.content.res.ResourcesCompat
-import androidx.core.view.size
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
-import androidx.datastore.preferences.core.intPreferencesKey
-import androidx.datastore.preferences.createDataStore
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.createViewModelLazy
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pokmons.R
 import com.example.pokmons.databinding.FragmentPokemonsBinding
-import com.example.pokmons.feature.pokemons.logic.PokemonsAdapter
 import com.example.pokmons.feature.pokemons.UsersActivity
-import com.example.pokmons.feature.pokemons.UsersActivity.ClickListener
+import com.example.pokmons.feature.pokemons.fragments.adapters.PokemonsAdapter
 import com.example.pokmons.feature.pokemons.logic.PokemonsViewModel
-import com.example.pokmons.util.Divider
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import java.util.*
 import javax.inject.Inject
-import kotlin.coroutines.coroutineContext
 
 @FlowPreview
 @ExperimentalCoroutinesApi
@@ -83,13 +72,9 @@ class PokemonsFragment @Inject constructor(
 
         pokemonsAdapter.clickListener = usersActivity.setClickListenerOnAdapter()
 
-        val divider = Divider(usersActivity)
-        divider.setDrawable(ResourcesCompat.getDrawable(resources, R.drawable.divider, usersActivity.theme)!!)
-
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(usersActivity)
             adapter = pokemonsAdapter
-            addItemDecoration(divider)
             addOnScrollListener(object: RecyclerView.OnScrollListener() {
                 override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                     isScrolling = true
@@ -117,6 +102,25 @@ class PokemonsFragment @Inject constructor(
             val startPoint = viewmodel.offsetChannel.value
             viewmodel.responseGetPokemonsImage(startPoint)
             viewmodel.offsetChannel.send(startPoint + 50)
+        }
+    }
+
+    val scrollListener = object: RecyclerView.OnScrollListener() {
+        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+            isScrolling = true
+            super.onScrollStateChanged(recyclerView, newState)
+        }
+
+        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            val rv = recyclerView.layoutManager as LinearLayoutManager
+
+            val totalItems = rv.itemCount
+            val lastIndex = rv.findLastVisibleItemPosition()
+
+            if (totalItems-1 == lastIndex && totalItems > 0 && isScrolling) {
+                requestNewData()
+            }
+            super.onScrolled(recyclerView, dx, dy)
         }
     }
 }

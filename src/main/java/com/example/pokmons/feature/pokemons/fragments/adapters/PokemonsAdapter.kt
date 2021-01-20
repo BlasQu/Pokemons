@@ -1,21 +1,15 @@
-package com.example.pokmons.feature.pokemons.logic
+package com.example.pokmons.feature.pokemons.fragments.adapters
 
-import android.content.Context
 import android.net.Uri
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pokmons.data.entities.Pokemon
 import com.example.pokmons.databinding.RvPokemonItemBinding
-import androidx.fragment.app.activityViewModels
 import com.example.pokmons.data.serializables.PokemonInfo
 import com.example.pokmons.feature.pokemons.UsersActivity
-import com.example.pokmons.feature.pokemons.fragments.PokemonsFragment
 import com.example.pokmons.util.PokemonDiffCallback
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import javax.inject.Inject
@@ -37,8 +31,10 @@ class PokemonsAdapter @Inject constructor(
                 val abilities = pokemonsList[adapterPosition].stats.first().abilities
                 val weight = pokemonsList[adapterPosition].stats.first().weight.toString()
                 val height = pokemonsList[adapterPosition].stats.first().height.toString()
+                val types = pokemonsList[adapterPosition].stats.first().types
                 val imageURL = pokemonsList[adapterPosition].imageUrl
-                val pokemonInfo = PokemonInfo(id, name, abilities, weight, height, imageURL)
+
+                val pokemonInfo = PokemonInfo(id, name, abilities, types, weight, height, imageURL)
                 clickListener.click(pokemonInfo)
             }
         }

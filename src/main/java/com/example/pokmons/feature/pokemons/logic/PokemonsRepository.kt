@@ -43,7 +43,6 @@ class PokemonsRepository @Inject constructor(
     }
 
     suspend fun responseGetPokemonsAbilities(startPoint: Int): List<Stats> {
-        val abilities = mutableListOf<String>()
         val pokemonsStats = mutableListOf<Stats>()
         var pokemonWeight = 0
         var pokemonHeight = 0
@@ -52,13 +51,20 @@ class PokemonsRepository @Inject constructor(
             val url = "https://pokeapi.co/api/v2/pokemon/${number}/"
             val response = api.getAbilities(url)
             if (response.isSuccessful) {
+                val abilities = mutableListOf<String>()
+                val types = mutableListOf<String>()
                 val body = response.body()!!
                 pokemonWeight = body.weight
                 pokemonHeight = body.height
+
                 for (every in body.abilities) {
-                    abilities.add(every.ability.toString())
+                    abilities.add(every.ability.name)
                 }
-                val stats = Stats(abilities, pokemonWeight, pokemonHeight)
+                for(every in body.types) {
+                    types.add(every.type.name)
+                }
+
+                val stats = Stats(abilities, pokemonWeight, pokemonHeight, types)
                 pokemonsStats.add(stats)
             }
         }
