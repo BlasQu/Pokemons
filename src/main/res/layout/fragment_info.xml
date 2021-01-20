@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:id="@+id/img_pokemon_sprite"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="16dp"
+        android:background="@drawable/img_pokemon"
+        app:layout_constraintBottom_toBottomOf="@id/gl_horizontal"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.25" />
+
+    <TextView
+        android:id="@+id/text_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="8dp"
+        app:layout_constraintStart_toEndOf="@id/img_pokemon_sprite"
+        app:layout_constraintTop_toTopOf="@id/img_pokemon_sprite"
+        android:layout_marginTop="8dp"
+        app:layout_constraintVertical_chainStyle="spread" />
+
+    <TextView
+        android:id="@+id/text_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/text_weight"
+        app:layout_constraintStart_toEndOf="@id/img_pokemon_sprite"
+        app:layout_constraintTop_toBottomOf="@+id/text_id" />
+
+    <TextView
+        android:id="@+id/text_weight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/text_height"
+        app:layout_constraintStart_toEndOf="@id/img_pokemon_sprite"
+        app:layout_constraintTop_toBottomOf="@+id/text_name" />
+
+    <TextView
+        android:id="@+id/text_height"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:paddingStart="8dp"
+        app:layout_constraintBottom_toBottomOf="@id/img_pokemon_sprite"
+        app:layout_constraintStart_toEndOf="@id/img_pokemon_sprite" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

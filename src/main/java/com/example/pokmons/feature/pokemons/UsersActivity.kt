@@ -19,12 +19,15 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.pokmons.R
 import com.example.pokmons.databinding.ActivityUsersBinding
+import com.example.pokmons.feature.pokemons.fragments.InfoFragment
 import com.example.pokmons.feature.pokemons.fragments.PokemonsFragment
 import com.example.pokmons.feature.pokemons.logic.PokemonsViewModel
 import com.example.pokmons.util.Divider
 import com.example.pokmons.util.RequestState
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -32,14 +35,19 @@ import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 
+@ExperimentalCoroutinesApi
+@FlowPreview
 @AndroidEntryPoint
-class UsersActivity : AppCompatActivity() {
+class UsersActivity: AppCompatActivity() {
 
     private lateinit var binding: ActivityUsersBinding
     private val viewmodel by viewModels<PokemonsViewModel>()
 
     @Inject
     lateinit var pokemonsFragment: PokemonsFragment
+
+    @Inject
+    lateinit var infoFragment: InfoFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

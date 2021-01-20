@@ -14,11 +14,15 @@ import androidx.lifecycle.lifecycleScope
 import com.example.pokmons.R
 import com.example.pokmons.databinding.ActivitySplashBinding
 import com.example.pokmons.feature.pokemons.UsersActivity
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
+@FlowPreview
+@ExperimentalCoroutinesApi
 class SplashActivity : AppCompatActivity() {
 
     private lateinit var binding : ActivitySplashBinding

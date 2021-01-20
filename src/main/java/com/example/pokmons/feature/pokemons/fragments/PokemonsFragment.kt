@@ -52,6 +52,8 @@ class PokemonsFragment @Inject constructor(
         super.onViewCreated(view, savedInstanceState)
         usersActivity = activity as UsersActivity
 
+        /*
+
         lifecycleScope.launch {
             if (wipeList() || viewmodel.pokemons.first().isEmpty()){
                 viewmodel.deleteAllData()
@@ -63,6 +65,13 @@ class PokemonsFragment @Inject constructor(
         }
 
         setupAdapter()
+
+         */
+
+
+
+        //viewmodel.testAbilities()
+
     }
 
     private suspend fun wipeList(): Boolean {

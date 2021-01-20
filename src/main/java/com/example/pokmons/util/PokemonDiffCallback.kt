@@ -3,7 +3,7 @@ package com.example.pokmons.util
 import androidx.recyclerview.widget.DiffUtil
 import com.example.pokmons.data.entities.Pokemon
 
-class DiffCallback(val oldList: List<Pokemon>, val newList: List<Pokemon>): DiffUtil.Callback() {
+class PokemonDiffCallback(val oldList: List<Pokemon>, val newList: List<Pokemon>): DiffUtil.Callback() {
     override fun getOldListSize(): Int {
         return oldList.size
     }
