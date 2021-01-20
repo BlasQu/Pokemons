@@ -14,13 +14,19 @@ import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.pokmons.R
+import com.example.pokmons.data.serializables.PokemonInfo
 import com.example.pokmons.databinding.ActivityUsersBinding
 import com.example.pokmons.feature.pokemons.fragments.InfoFragment
 import com.example.pokmons.feature.pokemons.fragments.PokemonsFragment
+import com.example.pokmons.feature.pokemons.logic.PokemonsAdapter
 import com.example.pokmons.feature.pokemons.logic.PokemonsViewModel
 import com.example.pokmons.util.Divider
 import com.example.pokmons.util.RequestState
@@ -49,6 +55,9 @@ class UsersActivity: AppCompatActivity() {
     @Inject
     lateinit var infoFragment: InfoFragment
 
+    @Inject
+    lateinit var datastore: DataStore<Preferences>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityUsersBinding.inflate(layoutInflater)
@@ -66,8 +75,36 @@ class UsersActivity: AppCompatActivity() {
         }
     }
 
+    private fun changeFragment() {
+        val entry = supportFragmentManager.backStackEntryCount - 1
+        val fragment = supportFragmentManager.getBackStackEntryAt(entry).name
+        when (fragment) {
+            "PokemonsFragment" -> {
+                supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.fragment_container, infoFragment)
+                    addToBackStack("InfoFragment")
+                    commit()
+                }
+            }
+            "InfoFragment" -> {
+                supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.fragment_container, pokemonsFragment)
+                    addToBackStack("PokemonsFragment")
+                    commit()
+                }
+            }
+        }
+    }
+
     fun snackbarMessage(message: String) {
         Snackbar.make(binding.root, message, Snackbar.LENGTH_SHORT).show()
+    }
+
+    private suspend fun writeToDatastore() {
+        val key = longPreferencesKey("LastUpdate")
+        datastore.edit {
+            it[key] = System.currentTimeMillis() + 600000 // 10 minutes
+        }
     }
 
     private fun setupCollectors() {
@@ -83,6 +120,7 @@ class UsersActivity: AppCompatActivity() {
                         }
                         delay(shortAnimTime)
                         viewmodel.requestState.value = RequestState.EMPTY
+                        writeToDatastore()
                     }
                     RequestState.LOADING -> {
                         binding.holderProgressBar.holderProgressBar.visibility = View.VISIBLE
@@ -107,4 +145,27 @@ class UsersActivity: AppCompatActivity() {
             }
         }
     }
+
+    fun setClickListenerOnAdapter(): ClickListener {
+        return object: ClickListener {
+            override fun click(pokemonInfo: PokemonInfo) {
+                lifecycleScope.launch {
+                    viewmodel.pokemonInfo.send(pokemonInfo)
+                }
+                changeFragment()
+            }
+        }
+    }
+
+    interface ClickListener {
+        fun click(pokemonInfo: PokemonInfo)
+    }
+
+
+    class ClickListenerImpl @Inject constructor(
+    ): ClickListener {
+        override fun click(pokemonInfo: PokemonInfo) {
+        }
+    }
+
 }

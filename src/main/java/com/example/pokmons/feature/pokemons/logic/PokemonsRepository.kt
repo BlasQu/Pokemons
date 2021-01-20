@@ -1,11 +1,10 @@
 package com.example.pokmons.feature.pokemons.logic
 
-import android.util.Log
 import com.example.pokmons.data.api.PokemonsService
 import com.example.pokmons.data.entities.Pokemon
 import com.example.pokmons.data.room.PokemonsDao
+import com.example.pokmons.data.serializables.pokemon.name.Results
 import com.example.pokmons.data.serializables.Stats
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -20,13 +19,13 @@ class PokemonsRepository @Inject constructor(
 
     suspend fun deleteAllData() = dao.deleteAllData()
 
-    suspend fun responseGetPokemons(startPoint: Int): List<String> {
-        val resultsList = mutableListOf<String>()
+    suspend fun responseGetPokemons(startPoint: Int): List<Results> {
+        val resultsList = mutableListOf<Results>()
         val response = api.getPokemon(50, startPoint)
         if (response.isSuccessful) {
             val results = response.body()!!.results
             for (every in results) {
-                resultsList.add(every.name)
+                resultsList.add(Results(every.name))
             }
         }
         return resultsList
@@ -43,22 +42,27 @@ class PokemonsRepository @Inject constructor(
         return imagesUrlList
     }
 
-    suspend fun responseGetPokemonsAbilities(): Stats {
+    suspend fun responseGetPokemonsAbilities(startPoint: Int): List<Stats> {
         val abilities = mutableListOf<String>()
-        val response = api.getAbilities()
+        val pokemonsStats = mutableListOf<Stats>()
         var pokemonWeight = 0
         var pokemonHeight = 0
 
-        if (response.isSuccessful) {
-            val body = response.body()!!
-            pokemonWeight = body.weight
-            pokemonHeight = body.height
-            for (every in body.abilities) {
-                abilities.add(every.ability.toString())
+        for (number in startPoint+1..startPoint+50) {
+            val url = "https://pokeapi.co/api/v2/pokemon/${number}/"
+            val response = api.getAbilities(url)
+            if (response.isSuccessful) {
+                val body = response.body()!!
+                pokemonWeight = body.weight
+                pokemonHeight = body.height
+                for (every in body.abilities) {
+                    abilities.add(every.ability.toString())
+                }
+                val stats = Stats(abilities, pokemonWeight, pokemonHeight)
+                pokemonsStats.add(stats)
             }
         }
 
-        val stats = Stats(abilities, pokemonWeight, pokemonHeight)
-        return stats
+        return pokemonsStats
     }
 }

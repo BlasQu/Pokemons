@@ -1,4 +1,4 @@
-package com.example.pokmons.data.serializables
+package com.example.pokmons.data.serializables.pokemon.image
 
 import kotlinx.serialization.Serializable
 

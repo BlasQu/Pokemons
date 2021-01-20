@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pokmons.data.entities.Pokemon
 import com.example.pokmons.databinding.RvPokemonItemBinding
+import androidx.fragment.app.activityViewModels
+import com.example.pokmons.data.serializables.PokemonInfo
 import com.example.pokmons.feature.pokemons.UsersActivity
 import com.example.pokmons.feature.pokemons.fragments.PokemonsFragment
 import com.example.pokmons.util.PokemonDiffCallback
@@ -21,13 +23,23 @@ import javax.inject.Inject
 @FlowPreview
 @ExperimentalCoroutinesApi
 class PokemonsAdapter @Inject constructor(
+        var clickListener: UsersActivity.ClickListener
 ): RecyclerView.Adapter<PokemonsAdapter.ViewHolder>() {
 
     var pokemonsList: MutableList<Pokemon> = mutableListOf()
 
+
     inner class ViewHolder(val binding: RvPokemonItemBinding): RecyclerView.ViewHolder(binding.root) {
         init {
             binding.root.setOnClickListener {
+                val id = pokemonsList[adapterPosition].id.toString()
+                val name = pokemonsList[adapterPosition].name
+                val abilities = pokemonsList[adapterPosition].stats.first().abilities
+                val weight = pokemonsList[adapterPosition].stats.first().weight.toString()
+                val height = pokemonsList[adapterPosition].stats.first().height.toString()
+                val imageURL = pokemonsList[adapterPosition].imageUrl
+                val pokemonInfo = PokemonInfo(id, name, abilities, weight, height, imageURL)
+                clickListener.click(pokemonInfo)
             }
         }
     }

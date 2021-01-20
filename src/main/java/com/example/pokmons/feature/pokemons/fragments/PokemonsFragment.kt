@@ -20,6 +20,7 @@ import com.example.pokmons.R
 import com.example.pokmons.databinding.FragmentPokemonsBinding
 import com.example.pokmons.feature.pokemons.logic.PokemonsAdapter
 import com.example.pokmons.feature.pokemons.UsersActivity
+import com.example.pokmons.feature.pokemons.UsersActivity.ClickListener
 import com.example.pokmons.feature.pokemons.logic.PokemonsViewModel
 import com.example.pokmons.util.Divider
 import dagger.hilt.android.AndroidEntryPoint
@@ -52,8 +53,6 @@ class PokemonsFragment @Inject constructor(
         super.onViewCreated(view, savedInstanceState)
         usersActivity = activity as UsersActivity
 
-        /*
-
         lifecycleScope.launch {
             if (wipeList() || viewmodel.pokemons.first().isEmpty()){
                 viewmodel.deleteAllData()
@@ -66,25 +65,12 @@ class PokemonsFragment @Inject constructor(
 
         setupAdapter()
 
-         */
-
-
-
-        //viewmodel.testAbilities()
-
     }
 
     private suspend fun wipeList(): Boolean {
         val key = longPreferencesKey("LastUpdate")
         var lastStamp: Long = datastore.data.first()[key] ?: 0
         return System.currentTimeMillis() > lastStamp
-    }
-
-    private suspend fun writeToDatastore() {
-        val key = longPreferencesKey("LastUpdate")
-        datastore.edit {
-            it[key] = System.currentTimeMillis() + 600000 // 10 minutes
-        }
     }
 
     private fun setupAdapter() {
@@ -95,11 +81,7 @@ class PokemonsFragment @Inject constructor(
             }
         }
 
-        lifecycleScope.launch {
-            viewmodel.offsetChannel.asFlow().collect {
-                Log.d("NOTPOKEMONCOLLECT", it.toString())
-            }
-        }
+        pokemonsAdapter.clickListener = usersActivity.setClickListenerOnAdapter()
 
         val divider = Divider(usersActivity)
         divider.setDrawable(ResourcesCompat.getDrawable(resources, R.drawable.divider, usersActivity.theme)!!)
@@ -121,9 +103,7 @@ class PokemonsFragment @Inject constructor(
                     val lastIndex = rv.findLastVisibleItemPosition()
 
                     if (totalItems-1 == lastIndex && totalItems > 0 && isScrolling) {
-                        Log.d("NOTPOKEMON", "START")
                         requestNewData()
-                        Log.d("NOTPOKEMON", "DONE")
                     }
                     super.onScrolled(recyclerView, dx, dy)
                 }
@@ -136,7 +116,6 @@ class PokemonsFragment @Inject constructor(
         lifecycleScope.launch {
             val startPoint = viewmodel.offsetChannel.value
             viewmodel.responseGetPokemonsImage(startPoint)
-            writeToDatastore()
             viewmodel.offsetChannel.send(startPoint + 50)
         }
     }

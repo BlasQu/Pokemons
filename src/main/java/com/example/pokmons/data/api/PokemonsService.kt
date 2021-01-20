@@ -1,10 +1,11 @@
 package com.example.pokmons.data.api
 
-import com.example.pokmons.data.serializables.PokemonStats
-import com.example.pokmons.data.serializables.PokemonsList
+import com.example.pokmons.data.serializables.pokemon.stats.PokemonStats
+import com.example.pokmons.data.serializables.pokemon.name.PokemonsList
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
+import retrofit2.http.Url
 
 interface PokemonsService {
 
@@ -14,6 +15,6 @@ interface PokemonsService {
             @Query("offset") offset: Int = 0
     ): Response<PokemonsList>
 
-    @GET("pokemon/77/")
-    suspend fun getAbilities(): Response<PokemonStats>
+    @GET
+    suspend fun getAbilities(@Url url: String): Response<PokemonStats>
 }

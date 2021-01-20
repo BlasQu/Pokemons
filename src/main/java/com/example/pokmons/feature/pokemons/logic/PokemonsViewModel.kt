@@ -1,10 +1,12 @@
 package com.example.pokmons.feature.pokemons.logic
 
-import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokmons.data.entities.Pokemon
+import com.example.pokmons.data.serializables.PokemonInfo
+import com.example.pokmons.data.serializables.pokemon.name.Results
+import com.example.pokmons.data.serializables.Stats
 import com.example.pokmons.util.RequestState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
@@ -19,7 +21,7 @@ class PokemonsViewModel @ViewModelInject constructor(
 ): ViewModel() {
 
     val offsetChannel = ConflatedBroadcastChannel<Int>(0)
-    val pokemonInfo = ConflatedBroadcastChannel<Int>(0)
+    val pokemonInfo = ConflatedBroadcastChannel<PokemonInfo>()
     val pokemons: Flow<List<Pokemon>> = repository.readPokemons()
     val requestState = MutableStateFlow<RequestState>(RequestState.EMPTY)
 
@@ -37,34 +39,29 @@ class PokemonsViewModel @ViewModelInject constructor(
     }
 
     suspend fun responseGetPokemonsImage(startPoint: Int) {
-        var pokemonsList = listOf<String>()
+        var pokemonsList = listOf<Results>()
         var pokemonsImagesList = listOf<String>()
+        var pokemonsStats = listOf<Stats>()
 
         withContext(viewModelScope.coroutineContext) {
             requestState.value = RequestState.LOADING
             launch { pokemonsList = repository.responseGetPokemons(startPoint) }
             launch { pokemonsImagesList = repository.responseGetPokemonsImage(startPoint) }
+            launch { pokemonsStats = repository.responseGetPokemonsAbilities(startPoint) }
         }
 
-        Log.d("POKEMON", pokemonsList.size.toString())
-        Log.d("POKEMON", pokemonsImagesList.size.toString())
-        if (pokemonsList.size == pokemonsImagesList.size) {
+        if (pokemonsList.size == pokemonsImagesList.size && pokemonsList.size == pokemonsStats.size) {
             val innerPokemons = mutableListOf<Pokemon>()
             for (i in pokemonsList.indices) {
-                val name = pokemonsList[i]
+                val name = pokemonsList[i].name
                 val imageUrl = pokemonsImagesList[i]
-                innerPokemons.add(Pokemon(0, name, imageUrl))
+                val stats = listOf(pokemonsStats[i])
+                innerPokemons.add(Pokemon(0, name, imageUrl, stats))
             }
             requestState.value = RequestState.SUCCESS
             insertPokemons(innerPokemons)
         } else {
             requestState.value = RequestState.ERROR("Error occurred while requesting data.")
-        }
-    }
-
-    fun testAbilities() {
-        viewModelScope.launch {
-            repository.responseGetPokemonsAbilities()
         }
     }
 }

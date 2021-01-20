@@ -18,4 +18,5 @@ interface PokemonsDao {
 
     @Query("DELETE FROM pokemons")
     suspend fun deleteAllData()
+
 }

@@ -20,43 +20,105 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.25" />
+        app:layout_constraintGuide_percent="0.35" />
 
     <TextView
         android:id="@+id/text_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="@string/id"
         android:paddingStart="8dp"
         app:layout_constraintStart_toEndOf="@id/img_pokemon_sprite"
         app:layout_constraintTop_toTopOf="@id/img_pokemon_sprite"
         android:layout_marginTop="8dp"
+        android:textStyle="bold"
         app:layout_constraintVertical_chainStyle="spread" />
 
     <TextView
         android:id="@+id/text_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="@string/name"
+        android:textStyle="bold"
         android:paddingStart="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/text_weight"
         app:layout_constraintStart_toEndOf="@id/img_pokemon_sprite"
-        app:layout_constraintTop_toBottomOf="@+id/text_id" />
+        app:layout_constraintTop_toBottomOf="@id/text_id"
+        app:layout_constraintBottom_toTopOf="@id/text_weight"
+        android:layout_marginTop="8dp" />
 
     <TextView
         android:id="@+id/text_weight"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="@string/weight"
+        android:textStyle="bold"
         android:paddingStart="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/text_height"
         app:layout_constraintStart_toEndOf="@id/img_pokemon_sprite"
-        app:layout_constraintTop_toBottomOf="@+id/text_name" />
+        app:layout_constraintTop_toBottomOf="@id/text_name"
+        app:layout_constraintBottom_toTopOf="@id/text_height"
+        android:layout_marginTop="8dp" />
 
     <TextView
         android:id="@+id/text_height"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
+        android:text="@string/height"
+        android:textStyle="bold"
         android:paddingStart="8dp"
+        app:layout_constraintStart_toEndOf="@id/img_pokemon_sprite"
+        app:layout_constraintTop_toBottomOf="@id/text_weight"
         app:layout_constraintBottom_toBottomOf="@id/img_pokemon_sprite"
+        android:layout_marginTop="8dp" />
+
+    <TextView
+        android:id="@+id/text_id_user"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:textSize="24sp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/img_pokemon_sprite"
+        app:layout_constraintTop_toBottomOf="@id/text_id"
+        app:layout_constraintVertical_chainStyle="spread" />
+
+
+    <TextView
+        android:id="@+id/text_name_user"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:textSize="24sp"
+        android:paddingStart="8dp"
+        android:textAllCaps="true"
+        android:paddingEnd="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/img_pokemon_sprite"
+        app:layout_constraintTop_toBottomOf="@+id/text_name" />
+
+    <TextView
+        android:id="@+id/text_weight_user"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:textSize="24sp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/img_pokemon_sprite"
+        app:layout_constraintTop_toBottomOf="@+id/text_weight" />
+
+    <TextView
+        android:id="@+id/text_height_user"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:maxLines="1"
+        android:textSize="24sp"
+        app:layout_constraintTop_toBottomOf="@id/text_height"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/img_pokemon_sprite" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

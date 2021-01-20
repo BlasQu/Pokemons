@@ -4,8 +4,6 @@
     package="com.example.pokmons">
 
     <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS"
-        tools:ignore="ProtectedPermissions" />
 
     <application
         android:name=".di.HiltApplicationProvider"

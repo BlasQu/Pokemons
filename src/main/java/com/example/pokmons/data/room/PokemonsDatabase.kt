@@ -1,6 +1,7 @@
 package com.example.pokmons.data.room
 
 import androidx.room.Database
+import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.pokmons.data.converters.JSONConverter
@@ -10,4 +11,5 @@ import com.example.pokmons.data.entities.Pokemon
 @TypeConverters(JSONConverter::class)
 abstract class PokemonsDatabase : RoomDatabase() {
     abstract fun getDao() : PokemonsDao
+
 }
