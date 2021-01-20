@@ -7,6 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.pokmons.data.entities.Pokemon
 import com.example.pokmons.data.serializables.Result
 import com.example.pokmons.util.RequestState
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -16,6 +18,8 @@ class PokemonsViewModel @ViewModelInject constructor(
     val repository: PokemonsRepository
 ): ViewModel() {
 
+    @ExperimentalCoroutinesApi
+    val offsetChannel = ConflatedBroadcastChannel<Int>(0)
     val pokemons: Flow<List<Pokemon>> = repository.readPokemons()
     val requestState = MutableStateFlow<RequestState>(RequestState.EMPTY)
 

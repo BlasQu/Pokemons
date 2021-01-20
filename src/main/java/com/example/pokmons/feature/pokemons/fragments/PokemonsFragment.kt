@@ -23,17 +23,14 @@ import com.example.pokmons.feature.pokemons.UsersActivity
 import com.example.pokmons.feature.pokemons.logic.PokemonsViewModel
 import com.example.pokmons.util.Divider
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 import java.util.*
 import javax.inject.Inject
 import kotlin.coroutines.coroutineContext
 
+@FlowPreview
+@ExperimentalCoroutinesApi
 @AndroidEntryPoint
 class PokemonsFragment @Inject constructor(
 ): Fragment(R.layout.fragment_pokemons) {
@@ -41,7 +38,8 @@ class PokemonsFragment @Inject constructor(
     private val viewmodel by activityViewModels<PokemonsViewModel>()
     private lateinit var binding: FragmentPokemonsBinding
     private lateinit var usersActivity: UsersActivity
-    var startPoint: Int = 50
+
+    private var isScrolling = false
 
     @Inject
     lateinit var pokemonsAdapter: PokemonsAdapter
@@ -58,17 +56,18 @@ class PokemonsFragment @Inject constructor(
             if (wipeList() || viewmodel.pokemons.first().isEmpty()){
                 viewmodel.deleteAllData()
                 viewmodel.responseGetPokemonsImage(0)
+                viewmodel.offsetChannel.send(50)
+            } else {
+                viewmodel.offsetChannel.send(viewmodel.pokemons.first().size)
             }
         }
 
         setupAdapter()
-
     }
 
     private suspend fun wipeList(): Boolean {
         val key = longPreferencesKey("LastUpdate")
         var lastStamp: Long = datastore.data.first()[key] ?: 0
-        Log.d("NOTPOKEMON", lastStamp.toString())
         return System.currentTimeMillis() > lastStamp
     }
 
@@ -83,7 +82,13 @@ class PokemonsFragment @Inject constructor(
         lifecycleScope.launch {
             viewmodel.pokemons.collect {
                 pokemonsAdapter.submitData(it)
-                startPoint = it.size
+                viewmodel.offsetChannel.send(it.size)
+            }
+        }
+
+        lifecycleScope.launch {
+            viewmodel.offsetChannel.asFlow().collect {
+                Log.d("NOTPOKEMONCOLLECT", it.toString())
             }
         }
 
@@ -95,22 +100,35 @@ class PokemonsFragment @Inject constructor(
             adapter = pokemonsAdapter
             addItemDecoration(divider)
             addOnScrollListener(object: RecyclerView.OnScrollListener() {
+                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                    isScrolling = true
+                    super.onScrollStateChanged(recyclerView, newState)
+                }
+
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     val rv = recyclerView.layoutManager as LinearLayoutManager
 
                     val totalItems = rv.itemCount
                     val lastIndex = rv.findLastVisibleItemPosition()
 
-                    if (totalItems-1 == lastIndex && totalItems > 0) {
-                        lifecycleScope.launch {
-                            viewmodel.responseGetPokemonsImage(startPoint)
-                            writeToDatastore()
-                            startPoint += 50
-                        }
+                    if (totalItems-1 == lastIndex && totalItems > 0 && isScrolling) {
+                        Log.d("NOTPOKEMON", "START")
+                        requestNewData()
+                        Log.d("NOTPOKEMON", "DONE")
                     }
                     super.onScrolled(recyclerView, dx, dy)
                 }
             })
+        }
+    }
+
+    private fun requestNewData() {
+        isScrolling = false
+        lifecycleScope.launch {
+            val startPoint = viewmodel.offsetChannel.value
+            viewmodel.responseGetPokemonsImage(startPoint)
+            writeToDatastore()
+            viewmodel.offsetChannel.send(startPoint + 50)
         }
     }
 }

@@ -26,7 +26,6 @@ class PokemonsRepository @Inject constructor(
         if (response.isSuccessful) {
             val results = response.body()!!.results
             for (every in results) {
-                Log.d("POKEMON", every.name)
                 resultsList.add(Result(every.name, every.url))
             }
         }
@@ -36,7 +35,6 @@ class PokemonsRepository @Inject constructor(
     fun responseGetPokemonsImage(startPoint: Int): List<String> {
         val imagesUrlList = mutableListOf<String>()
         for (number in startPoint+1..startPoint+50) {
-            Log.d("POKEMON", number.toString())
             val url = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${number}.png"
             imagesUrlList.add(url)
         }

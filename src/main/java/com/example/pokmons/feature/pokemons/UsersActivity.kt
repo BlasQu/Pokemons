@@ -73,12 +73,12 @@ class UsersActivity : AppCompatActivity() {
                             interpolator = FastOutSlowInInterpolator()
                             alpha(0f)
                         }
-                        delay(3000)
+                        delay(shortAnimTime)
                         viewmodel.requestState.value = RequestState.EMPTY
                     }
                     RequestState.LOADING -> {
+                        binding.holderProgressBar.holderProgressBar.visibility = View.VISIBLE
                         binding.holderProgressBar.holderProgressBar.animate().apply {
-                            binding.holderProgressBar.holderProgressBar.visibility = View.VISIBLE
                             duration = shortAnimTime
                             interpolator = FastOutSlowInInterpolator()
                             alpha(0.75f)

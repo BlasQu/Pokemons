@@ -30,7 +30,6 @@ class SplashActivity : AppCompatActivity() {
 
         animateSplash()
         changeActivity()
-        setupStats()
 
     }
 
@@ -40,19 +39,6 @@ class SplashActivity : AppCompatActivity() {
             delay(3000)
             startActivity(intent)
             finish()
-        }
-    }
-
-    private fun setupStats() {
-        val usageStatsManager: UsageStatsManager = getSystemService(Context.USAGE_STATS_SERVICE)!! as UsageStatsManager
-        val calendar = Calendar.getInstance()
-        calendar.add(Calendar.HOUR, -1)
-        val queryStatsManager: List<UsageStats> = usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, calendar.timeInMillis, System.currentTimeMillis())
-        for (every in queryStatsManager) {
-            if (every.packageName == packageName) {
-                val date = SimpleDateFormat("HH:mm:ss").format(every.lastTimeVisible)
-                Log.d("NOTPOKEMON", date.toString())
-            }
         }
     }
 
