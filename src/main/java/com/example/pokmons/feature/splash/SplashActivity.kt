@@ -1,24 +1,17 @@
 package com.example.pokmons.feature.splash
 
-import android.app.usage.UsageStats
-import android.app.usage.UsageStatsManager
-import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.view.animation.AnimationUtils
-import android.widget.Toast
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.lifecycle.lifecycleScope
 import com.example.pokmons.R
 import com.example.pokmons.databinding.ActivitySplashBinding
-import com.example.pokmons.feature.pokemons.UsersActivity
+import com.example.pokmons.feature.pokemons.user.UsersActivity
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
 import java.util.*
 
 @FlowPreview

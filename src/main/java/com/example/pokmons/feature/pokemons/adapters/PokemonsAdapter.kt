@@ -1,4 +1,4 @@
-package com.example.pokmons.feature.pokemons.fragments.adapters
+package com.example.pokmons.feature.pokemons.adapters
 
 import android.net.Uri
 import android.view.LayoutInflater
@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.pokmons.data.entities.Pokemon
 import com.example.pokmons.databinding.RvPokemonItemBinding
 import com.example.pokmons.data.serializables.PokemonInfo
-import com.example.pokmons.feature.pokemons.UsersActivity
+import com.example.pokmons.feature.pokemons.user.UsersActivity
 import com.example.pokmons.util.PokemonDiffCallback
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview

@@ -1,4 +1,4 @@
-package com.example.pokmons.feature.pokemons.fragments.adapters
+package com.example.pokmons.feature.pokemons.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

@@ -10,9 +10,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.pokmons.R
 import com.example.pokmons.databinding.FragmentInfoBinding
-import com.example.pokmons.feature.pokemons.UsersActivity
-import com.example.pokmons.feature.pokemons.fragments.adapters.InfoAbilityAdapter
-import com.example.pokmons.feature.pokemons.fragments.adapters.InfoFormsAdapter
+import com.example.pokmons.feature.pokemons.user.UsersActivity
+import com.example.pokmons.feature.pokemons.adapters.InfoAbilityAdapter
+import com.example.pokmons.feature.pokemons.adapters.InfoFormsAdapter
 import com.example.pokmons.feature.pokemons.logic.PokemonsViewModel
 import com.example.pokmons.util.Divider
 import dagger.hilt.android.AndroidEntryPoint

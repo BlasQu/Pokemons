@@ -1,4 +1,4 @@
-package com.example.pokmons.feature.pokemons
+package com.example.pokmons.feature.pokemons.user
 
 import android.os.Bundle
 import android.view.View
@@ -50,6 +50,42 @@ class UsersActivity: AppCompatActivity() {
 
         setupCollectors()
         setupFragment()
+        setupToolbar()
+    }
+
+    private fun setupToolbar() {
+        setSupportActionBar(binding.toolbar.root)
+        val toolbar = supportActionBar!!
+        toolbar.apply {
+            title = "Pokemons"
+            setDisplayHomeAsUpEnabled(false)
+        }
+    }
+    
+    private fun currentFragment(): String {
+        val entry = supportFragmentManager.backStackEntryCount - 1
+        val fragment = supportFragmentManager.getBackStackEntryAt(entry).name!!
+        return fragment
+    }
+
+    override fun onBackPressed() {
+        val fragment = currentFragment()
+        when (fragment) {
+            "PokemonsFragment" -> {
+                finish()
+            }
+            "InfoFragment" -> {
+                supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.fragment_container, pokemonsFragment)
+                    addToBackStack("PokemonsFragment")
+                    commit()
+                }
+                supportActionBar!!.apply {
+                    title = "Pokemons"
+                    setDisplayHomeAsUpEnabled(false)
+                }
+            }
+        }
     }
 
     private fun setupFragment() {
@@ -61,8 +97,7 @@ class UsersActivity: AppCompatActivity() {
     }
 
     private fun changeFragment() {
-        val entry = supportFragmentManager.backStackEntryCount - 1
-        val fragment = supportFragmentManager.getBackStackEntryAt(entry).name
+        val fragment = currentFragment()
         when (fragment) {
             "PokemonsFragment" -> {
                 supportFragmentManager.beginTransaction().apply {
@@ -131,6 +166,11 @@ class UsersActivity: AppCompatActivity() {
         }
     }
 
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
+    }
+
     fun setClickListenerOnAdapter(): ClickListener {
         return object: ClickListener {
             override fun click(pokemonInfo: PokemonInfo) {
@@ -138,6 +178,10 @@ class UsersActivity: AppCompatActivity() {
                     viewmodel.pokemonInfo.send(pokemonInfo)
                 }
                 changeFragment()
+                supportActionBar!!.apply {
+                    title = "Pokemon details"
+                    setDisplayHomeAsUpEnabled(true)
+                }
             }
         }
     }
