@@ -5,11 +5,8 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
-import android.view.Menu
 import androidx.fragment.app.Fragment
 import android.view.View
-import android.widget.Toast
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
 import androidx.fragment.app.activityViewModels
@@ -53,18 +50,41 @@ class PokemonsFragment @Inject constructor(
         lifecycleScope.launch {
             if (wipeList() && isConnected() || viewmodel.pokemons.first().isEmpty() && isConnected()){
                 viewmodel.deleteAllData()
-                viewmodel.responseGetPokemonsImage(0)
-                viewmodel.offsetChannel.send(50)
+                var offset = getOffset()
+                if (offset > 1249) {
+                    saveOffset(0)
+                    offset = 0
+                }
+                viewmodel.responseGetPokemonsImage(offset)
+                viewmodel.offsetChannel.send(offset + 50)
+                saveOffset(offset + 50)
             } else if (!isConnected()) {
                 usersActivity.snackbarMessage("There is a problem with your connection. Check your wifi and internet.")
-                viewmodel.offsetChannel.send(viewmodel.pokemons.first().size)
+                val offset = getOffset()
+                viewmodel.offsetChannel.send(offset)
             }
-            else viewmodel.offsetChannel.send(viewmodel.pokemons.first().size)
+            else {
+                val offset = getOffset()
+                viewmodel.offsetChannel.send(offset)
+            }
         }
 
         setupAdapter()
         setupRefresh()
 
+    }
+
+    private suspend fun getOffset(): Int {
+        val key = intPreferencesKey("offset")
+        val offset = datastore.data.first()[key] ?: 0
+        return offset
+    }
+
+    private suspend fun saveOffset(offset: Int) {
+        val key = intPreferencesKey("offset")
+        datastore.edit {
+            it[key] = offset
+        }
     }
 
     private fun setupRefresh() {
@@ -131,6 +151,17 @@ class PokemonsFragment @Inject constructor(
                 val startPoint = viewmodel.offsetChannel.value
                 viewmodel.responseGetPokemonsImage(startPoint)
                 viewmodel.offsetChannel.send(startPoint + 50)
+                saveOffset(startPoint + 50)
+            }
+        }
+    }
+
+    private fun requestNewDataMinus() {
+        isScrolling = false
+        lifecycleScope.launch {
+            if (viewmodel.requestState.value == RequestState.EMPTY) {
+                val startPoint = viewmodel.offsetChannel.value
+                viewmodel.responseGetPokemonsImage(startPoint - viewmodel.pokemons.first().size - 50)
             }
         }
     }
@@ -146,10 +177,14 @@ class PokemonsFragment @Inject constructor(
 
             val totalItems = rv.itemCount
             val lastIndex = rv.findLastVisibleItemPosition()
+            val firstIndex = rv.findFirstVisibleItemPosition()
 
-            if (totalItems-1 == lastIndex && totalItems > 0 && isScrolling) {
+            if (totalItems-1 == lastIndex && totalItems > 0 && isScrolling && dy > 0) {
                 if (!isConnected()) usersActivity.snackbarMessage("There is a problem with your connection. Check your wifi and internet.")
                 else requestNewData()
+            } else if (firstIndex == 0 && totalItems > 0 && isScrolling && dy < 0) {
+                if (!isConnected()) usersActivity.snackbarMessage("There is a problem with your connection. Check your wifi and internet.")
+                else requestNewDataMinus()
             }
             super.onScrolled(recyclerView, dx, dy)
         }

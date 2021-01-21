@@ -62,7 +62,7 @@ class HiltModule {
         val content = MediaType.get("application/json")
         val json = Json { ignoreUnknownKeys = true }.asConverterFactory(content)
         return Retrofit.Builder()
-            .baseUrl("https://pokeapi.co/api/v2/")
+            .baseUrl(BASE_URL)
             .addConverterFactory(json)
             .build()
     }

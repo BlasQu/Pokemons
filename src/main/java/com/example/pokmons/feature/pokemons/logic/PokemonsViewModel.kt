@@ -1,14 +1,11 @@
 package com.example.pokmons.feature.pokemons.logic
 
-import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokmons.data.entities.Pokemon
 import com.example.pokmons.data.serializables.PokemonConnector
 import com.example.pokmons.data.serializables.PokemonInfo
-import com.example.pokmons.data.serializables.pokemon.name.Results
-import com.example.pokmons.data.serializables.Stats
 import com.example.pokmons.util.RequestState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
@@ -43,7 +40,6 @@ class PokemonsViewModel @ViewModelInject constructor(
 
     suspend fun responseGetPokemonsImage(startPoint: Int) {
         var pokemonsList = listOf<PokemonConnector>()
-        var pokemonsStats = listOf<Stats>()
 
         withContext(viewModelScope.coroutineContext) {
             requestState.value = RequestState.LOADING
@@ -57,6 +53,7 @@ class PokemonsViewModel @ViewModelInject constructor(
                 val pokemonId = pokemonsList[i].pokemonId
                 val imageUrl = pokemonsList[i].imagesUrl
                 val stats = listOf(pokemonsList[i].stats)
+
                 innerPokemons.add(Pokemon(0, pokemonId, name, imageUrl, stats))
             }
             requestState.value = RequestState.SUCCESS

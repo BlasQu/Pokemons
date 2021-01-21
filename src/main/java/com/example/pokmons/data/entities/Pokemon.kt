@@ -4,7 +4,6 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.pokmons.data.serializables.Stats
-import kotlinx.serialization.Serializable
 
 @Entity(tableName = "pokemons")
 data class Pokemon(

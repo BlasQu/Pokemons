@@ -22,6 +22,7 @@
 
     <com.facebook.drawee.view.SimpleDraweeView
         android:id="@+id/img_pokemon"
+        app:actualImageResource="@drawable/no_image_found_transparent"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:actualImageScaleType="centerCrop"

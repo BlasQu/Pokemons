@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.example.pokmons.R
 import com.example.pokmons.data.entities.Pokemon
 import com.example.pokmons.databinding.RvPokemonItemBinding
 import com.example.pokmons.data.serializables.PokemonInfo
@@ -49,7 +50,8 @@ class PokemonsAdapter @Inject constructor(
         val imageUri: Uri = Uri.parse(pokemonsList[position].imageUrl)
         holder.binding.textPokemonId.text = pokemonsList[position].pokemonId.toString()
         holder.binding.textPokemonName.text = pokemonsList[position].name
-        holder.binding.imgPokemon.setImageURI(imageUri, holder.binding.root.context)
+        if (pokemonsList[position].imageUrl == "error") holder.binding.imgPokemon.setActualImageResource(R.drawable.no_image_found_transparent)
+        else holder.binding.imgPokemon.setImageURI(imageUri, holder.binding.root.context)
     }
 
     override fun getItemCount(): Int {
@@ -57,10 +59,11 @@ class PokemonsAdapter @Inject constructor(
     }
 
     fun submitData(newList: List<Pokemon>) {
-        val result = DiffUtil.calculateDiff(PokemonDiffCallback(pokemonsList, newList))
+        val sortedList = newList.sortedWith(compareBy { it.pokemonId })
+        val result = DiffUtil.calculateDiff(PokemonDiffCallback(pokemonsList, sortedList))
         pokemonsList.apply {
             clear()
-            addAll(newList)
+            addAll(sortedList)
         }
         result.dispatchUpdatesTo(this)
     }

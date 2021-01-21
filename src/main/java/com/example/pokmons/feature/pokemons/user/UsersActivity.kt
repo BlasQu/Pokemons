@@ -1,6 +1,5 @@
 package com.example.pokmons.feature.pokemons.user
 
-import android.content.Context
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
