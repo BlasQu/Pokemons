@@ -26,7 +26,7 @@ class PokemonsAdapter @Inject constructor(
     inner class ViewHolder(val binding: RvPokemonItemBinding): RecyclerView.ViewHolder(binding.root) {
         init {
             binding.root.setOnClickListener {
-                val id = pokemonsList[adapterPosition].id.toString()
+                val id = pokemonsList[adapterPosition].pokemonId.toString()
                 val name = pokemonsList[adapterPosition].name
                 val abilities = pokemonsList[adapterPosition].stats.first().abilities
                 val weight = pokemonsList[adapterPosition].stats.first().weight.toString()
@@ -47,7 +47,7 @@ class PokemonsAdapter @Inject constructor(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val imageUri: Uri = Uri.parse(pokemonsList[position].imageUrl)
-        holder.binding.textPokemonId.text = pokemonsList[position].id.toString()
+        holder.binding.textPokemonId.text = pokemonsList[position].pokemonId.toString()
         holder.binding.textPokemonName.text = pokemonsList[position].name
         holder.binding.imgPokemon.setImageURI(imageUri, holder.binding.root.context)
     }

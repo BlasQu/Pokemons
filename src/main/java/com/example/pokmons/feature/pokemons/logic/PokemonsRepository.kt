@@ -1,8 +1,10 @@
 package com.example.pokmons.feature.pokemons.logic
 
+import android.util.Log
 import com.example.pokmons.data.api.PokemonsService
 import com.example.pokmons.data.entities.Pokemon
 import com.example.pokmons.data.room.PokemonsDao
+import com.example.pokmons.data.serializables.PokemonConnector
 import com.example.pokmons.data.serializables.pokemon.name.Results
 import com.example.pokmons.data.serializables.Stats
 import kotlinx.coroutines.flow.Flow
@@ -19,56 +21,98 @@ class PokemonsRepository @Inject constructor(
 
     suspend fun deleteAllData() = dao.deleteAllData()
 
-    suspend fun responseGetPokemons(startPoint: Int): List<Results> {
-        val resultsList = mutableListOf<Results>()
+    suspend fun responseGetPokemons(startPoint: Int): List<PokemonConnector> {
+        val pokemons = mutableListOf<PokemonConnector>()
         val response = api.getPokemon(50, startPoint)
-        if (response.isSuccessful) {
-            val results = response.body()!!.results
-            for (every in results) {
-                resultsList.add(Results(every.name))
-            }
-        }
-        return resultsList
-    }
-
-    fun responseGetPokemonsImage(startPoint: Int): List<String> {
-        val imagesUrlList = mutableListOf<String>()
-
-        for (number in startPoint+1..startPoint+50) {
-            val url = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${number}.png"
-            imagesUrlList.add(url)
-        }
-
-        return imagesUrlList
-    }
-
-    suspend fun responseGetPokemonsAbilities(startPoint: Int): List<Stats> {
-        val pokemonsStats = mutableListOf<Stats>()
         var pokemonWeight = 0
         var pokemonHeight = 0
 
-        for (number in startPoint+1..startPoint+50) {
-            val url = "https://pokeapi.co/api/v2/pokemon/${number}/"
-            val response = api.getAbilities(url)
-            if (response.isSuccessful) {
-                val abilities = mutableListOf<String>()
-                val types = mutableListOf<String>()
-                val body = response.body()!!
-                pokemonWeight = body.weight
-                pokemonHeight = body.height
+        if (response.isSuccessful) {
+            val results = response.body()!!.results
+            for (every in results) {
+                val pokemonName = every.name
+                val pokemonId = getPokemonId(every.url)
+                var imageUrl = ""
+                val url = "https://pokeapi.co/api/v2/pokemon/${pokemonId}/"
+                val response2 = api.getAbilities(url)
+                if (response2.isSuccessful) {
+                    val abilities = mutableListOf<String>()
+                    val types = mutableListOf<String>()
+                    val body = response2.body()!!
+                    pokemonWeight = body.weight
+                    pokemonHeight = body.height
+                    val formUrl = body.forms.first().url
+                    Log.d("POKEMON", formUrl)
+                    if (pokemonId < 900) imageUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonId}.png" // ID: 900+ can't exploit easier way of implementing images
+                    else imageUrl = respondGetPokemonImage(formUrl)
 
-                for (every in body.abilities) {
-                    abilities.add(every.ability.name)
-                }
-                for(every in body.types) {
-                    types.add(every.type.name)
-                }
+                    for (e in body.abilities) {
+                        abilities.add(e.ability.name)
+                    }
+                    for (e in body.types) {
+                        types.add(e.type.name)
+                    }
 
-                val stats = Stats(abilities, pokemonWeight, pokemonHeight, types)
-                pokemonsStats.add(stats)
+                    val stats = Stats(abilities, pokemonWeight, pokemonHeight, types)
+                    pokemons.add(PokemonConnector(pokemonId, pokemonName, imageUrl, stats))
+                }
             }
         }
-
-        return pokemonsStats
+        return pokemons
     }
-}
+
+    suspend fun respondGetPokemonImage(formUrl: String): String {
+        val response2 = api.getImageUrl(formUrl)
+        if (response2.isSuccessful) {
+            val imageBody = response2.body()!!
+            val imageUrl: String? = imageBody.sprites.front_default
+            return imageUrl ?: "error"
+        }
+        return "error"
+    }
+        /*         val pokemons = mutableListOf<PokemonConnector>()
+       val response = api.getPokemon(50, startPoint)
+       var pokemonWeight = 0
+       var pokemonHeight = 0
+
+       if (response.isSuccessful) {
+           val results = response.body()!!.results
+           for (every in results) {
+               val pokemonName = every.name
+               val pokemonId = getPokemonId(every.url)
+               val formUrl = "https://pokeapi.co/api/v2/pokemon-form/${pokemonId}"
+
+               val response2 = api.getImageUrl(formUrl)
+               if (response2.isSuccessful) {
+                   val imageBody = response2.body()!!
+                   val imageUrl = imageBody.sprites.front_default
+                   val url = "https://pokeapi.co/api/v2/pokemon/${pokemonId}/"
+                   val response3 = api.getAbilities(url)
+                   if (response3.isSuccessful) {
+                       val abilities = mutableListOf<String>()
+                       val types = mutableListOf<String>()
+                       val body = response3.body()!!
+                       pokemonWeight = body.weight
+                       pokemonHeight = body.height
+
+                       for (e in body.abilities) {
+                           abilities.add(e.ability.name)
+                       }
+                       for(e in body.types) {
+                           types.add(e.type.name)
+                       }
+
+                       val stats = Stats(abilities, pokemonWeight, pokemonHeight, types)
+                       pokemons.add(PokemonConnector(pokemonId, pokemonName, imageUrl, stats))
+                   }
+               }
+           }
+       }
+
+    */
+
+        fun getPokemonId(url: String): Int {
+            val id: List<String> = Regex("[0-9]+").findAll(url).map(MatchResult::value).toList()
+            return id.last().toInt()
+        }
+    }

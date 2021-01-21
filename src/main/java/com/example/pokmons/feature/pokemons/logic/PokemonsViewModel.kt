@@ -1,9 +1,11 @@
 package com.example.pokmons.feature.pokemons.logic
 
+import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokmons.data.entities.Pokemon
+import com.example.pokmons.data.serializables.PokemonConnector
 import com.example.pokmons.data.serializables.PokemonInfo
 import com.example.pokmons.data.serializables.pokemon.name.Results
 import com.example.pokmons.data.serializables.Stats
@@ -24,6 +26,7 @@ class PokemonsViewModel @ViewModelInject constructor(
     val pokemonInfo = ConflatedBroadcastChannel<PokemonInfo>()
     val pokemons: Flow<List<Pokemon>> = repository.readPokemons()
     val requestState = MutableStateFlow<RequestState>(RequestState.EMPTY)
+    val refresh = ConflatedBroadcastChannel<Boolean>()
 
 
     fun insertPokemons(pokemons: List<Pokemon>) {
@@ -39,24 +42,22 @@ class PokemonsViewModel @ViewModelInject constructor(
     }
 
     suspend fun responseGetPokemonsImage(startPoint: Int) {
-        var pokemonsList = listOf<Results>()
-        var pokemonsImagesList = listOf<String>()
+        var pokemonsList = listOf<PokemonConnector>()
         var pokemonsStats = listOf<Stats>()
 
         withContext(viewModelScope.coroutineContext) {
             requestState.value = RequestState.LOADING
-            launch { pokemonsList = repository.responseGetPokemons(startPoint) }
-            launch { pokemonsImagesList = repository.responseGetPokemonsImage(startPoint) }
-            launch { pokemonsStats = repository.responseGetPokemonsAbilities(startPoint) }
+            pokemonsList = repository.responseGetPokemons(startPoint)
         }
 
-        if (pokemonsList.size == pokemonsImagesList.size && pokemonsList.size == pokemonsStats.size) {
+        if (pokemonsList.isNotEmpty()) {
             val innerPokemons = mutableListOf<Pokemon>()
             for (i in pokemonsList.indices) {
-                val name = pokemonsList[i].name
-                val imageUrl = pokemonsImagesList[i]
-                val stats = listOf(pokemonsStats[i])
-                innerPokemons.add(Pokemon(0, name, imageUrl, stats))
+                val name = pokemonsList[i].pokemonName
+                val pokemonId = pokemonsList[i].pokemonId
+                val imageUrl = pokemonsList[i].imagesUrl
+                val stats = listOf(pokemonsList[i].stats)
+                innerPokemons.add(Pokemon(0, pokemonId, name, imageUrl, stats))
             }
             requestState.value = RequestState.SUCCESS
             insertPokemons(innerPokemons)

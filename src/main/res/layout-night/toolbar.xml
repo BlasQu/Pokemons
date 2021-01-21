@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/toolbar"
     android:layout_width="match_parent"
-    android:background="@color/grey"
+    android:background="@color/dark"
     android:elevation="10dp"
     app:theme="@style/CustomToolbar"
     android:layout_height="wrap_content">

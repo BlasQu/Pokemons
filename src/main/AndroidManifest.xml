@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.pokmons">
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
@@ -13,8 +15,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Pokémons">
-        <activity android:name="com.example.pokmons.feature.pokemons.user.UsersActivity" />
-        <activity android:name="com.example.pokmons.feature.splash.SplashActivity">
+        <activity android:name="com.example.pokmons.feature.pokemons.user.UsersActivity"
+            android:configChanges="keyboardHidden|screenLayout|orientation|screenSize"/>
+        <activity android:name="com.example.pokmons.feature.splash.SplashActivity"
+            android:configChanges="keyboardHidden|screenLayout|orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -8,5 +8,6 @@ data class PokemonStats(
     val abilities: List<Ability>,
     val height: Int,
     val weight: Int,
-    val types: List<Type>
+    val types: List<Type>,
+    val forms: List<Forms>
 )

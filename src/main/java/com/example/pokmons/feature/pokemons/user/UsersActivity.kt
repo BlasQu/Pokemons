@@ -1,6 +1,9 @@
 package com.example.pokmons.feature.pokemons.user
 
+import android.content.Context
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -51,6 +54,7 @@ class UsersActivity: AppCompatActivity() {
         setupCollectors()
         setupFragment()
         setupToolbar()
+
     }
 
     private fun setupToolbar() {
@@ -79,6 +83,9 @@ class UsersActivity: AppCompatActivity() {
                     replace(R.id.fragment_container, pokemonsFragment)
                     addToBackStack("PokemonsFragment")
                     commit()
+                }
+                lifecycleScope.launch {
+                    writeToDatastore()
                 }
                 supportActionBar!!.apply {
                     title = "Pokemons"
@@ -118,6 +125,22 @@ class UsersActivity: AppCompatActivity() {
 
     fun snackbarMessage(message: String) {
         Snackbar.make(binding.root, message, Snackbar.LENGTH_SHORT).show()
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_toolbar, menu)
+        return super.onPrepareOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.refresh -> {
+                lifecycleScope.launch {
+                    viewmodel.refresh.send(true)
+                }
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private suspend fun writeToDatastore() {
@@ -176,6 +199,7 @@ class UsersActivity: AppCompatActivity() {
             override fun click(pokemonInfo: PokemonInfo) {
                 lifecycleScope.launch {
                     viewmodel.pokemonInfo.send(pokemonInfo)
+                    writeToDatastore()
                 }
                 changeFragment()
                 supportActionBar!!.apply {
